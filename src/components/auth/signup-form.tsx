@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import { signupSchema, type SignupInput } from '@/lib/validations/auth'
 import { useSignupMutation } from '@/hooks/use-auth'
 import { Field, FieldLabel, FieldError } from '@/components/ui/field'
@@ -40,6 +41,7 @@ export default function SignupForm() {
       </Field>
 
       <Button type="submit" disabled={mutation.isPending} className="w-full">
+        {mutation.isPending && <Loader2 data-icon="inline-start" className="animate-spin" />}
         {mutation.isPending ? 'Creating account…' : 'Create account'}
       </Button>
     </form>

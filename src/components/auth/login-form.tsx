@@ -2,6 +2,7 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import { loginSchema, type LoginInput } from '@/lib/validations/auth'
 import { useLoginMutation } from '@/hooks/use-auth'
 import { Field, FieldLabel, FieldError } from '@/components/ui/field'
@@ -34,6 +35,7 @@ export default function LoginForm() {
       </Field>
 
       <Button type="submit" disabled={mutation.isPending} className="w-full">
+        {mutation.isPending && <Loader2 data-icon="inline-start" className="animate-spin" />}
         {mutation.isPending ? 'Signing in…' : 'Sign in'}
       </Button>
     </form>

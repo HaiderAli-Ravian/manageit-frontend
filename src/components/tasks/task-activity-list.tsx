@@ -105,6 +105,13 @@ export function TaskActivityList({ taskId }: TaskActivityListProps) {
                     - {Object.keys(activity.changes).join(', ')}
                   </span>
                 )}
+                {(activity.action === 'ATTACHMENT_ADDED' ||
+                  activity.action === 'ATTACHMENT_REMOVED') &&
+                  activity.changes?.fileName && (
+                    <span className="text-muted-foreground">
+                      - {activity.changes.fileName as unknown as string}
+                    </span>
+                  )}
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
                 <span>

@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar'
 import { Field, FieldLabel, FieldError } from '@/components/ui/field'
 import { TaskActivityList } from './task-activity-list'
+import { AttachmentsList } from './attachments-list'
 import { useCreateTaskMutation, useUpdateTaskMutation } from '@/hooks/use-tasks'
 import { taskFormSchema, type TaskFormInput } from '@/lib/validations/task'
 import type { Task } from '@/services/task.service'
@@ -247,10 +248,14 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
           <Tabs defaultValue="details">
             <TabsList className="mb-5 h-11 w-full justify-start rounded-lg bg-muted/70">
               <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="attachments">Attachments</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>
             <TabsContent value="details">
               {formContent}
+            </TabsContent>
+            <TabsContent value="attachments">
+              <AttachmentsList taskId={task.id} />
             </TabsContent>
             <TabsContent value="activity">
               <TaskActivityList taskId={task.id} />
