@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -28,7 +29,7 @@ export function TaskPagination({
   if (totalPages <= 1 && !onLimitChange) return null
 
   return (
-    <div className="flex items-center justify-between gap-4">
+    <div className="premium-surface flex flex-col gap-3 rounded-lg border bg-card/82 p-3 backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
       {onLimitChange && limit ? (
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span>Rows per page</span>
@@ -40,9 +41,11 @@ export function TaskPagination({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
+              <SelectGroup>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </div>
@@ -58,7 +61,7 @@ export function TaskPagination({
           disabled={page <= 1}
           aria-label="Previous page"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft data-icon="inline-start" />
           Previous
         </Button>
 
@@ -74,7 +77,7 @@ export function TaskPagination({
           aria-label="Next page"
         >
           Next
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight data-icon="inline-end" />
         </Button>
       </div>
     </div>

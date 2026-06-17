@@ -11,11 +11,11 @@ export function AdminTasksPageClient() {
   const { data, isLoading } = useAdminTasks(filters)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="premium-enter flex flex-col gap-5 md:gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">All Tasks</h1>
-          <p className="text-sm text-muted-foreground">Admin view — all users&apos; tasks</p>
+          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">All Tasks</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Admin view - all users&apos; tasks</p>
         </div>
       </div>
 

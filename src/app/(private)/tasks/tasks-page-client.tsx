@@ -21,11 +21,14 @@ export function TasksPageClient() {
   const [deletingTask, setDeletingTask] = useState<Task | null>(null)
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold tracking-tight">Tasks</h1>
-        <Button onClick={() => setCreateOpen(true)}>
-          <Plus className="mr-2 h-4 w-4" />
+    <div className="premium-enter flex flex-col gap-5 md:gap-6">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">Tasks</h1>
+        <Button
+          onClick={() => setCreateOpen(true)}
+          className="h-9 rounded-lg px-3.5 shadow-md shadow-primary/20 transition-all duration-200 hover:shadow-lg hover:shadow-primary/20"
+        >
+          <Plus data-icon="inline-start" />
           New Task
         </Button>
       </div>

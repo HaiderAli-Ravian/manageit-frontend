@@ -11,6 +11,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton'
 import { TaskStatusBadge } from './task-status-badge'
 import { useTaskActivities } from '@/hooks/use-tasks'
+import { cn } from '@/lib/utils'
 import type { TaskActivityAction, TaskStatus } from '@/services/task.service'
 
 const actionLabels: Record<TaskActivityAction, string> = {
@@ -31,6 +32,15 @@ const ActionIcon: Record<TaskActivityAction, React.ElementType> = {
   ATTACHMENT_REMOVED: Paperclip,
 }
 
+const actionToneMap: Record<TaskActivityAction, string> = {
+  CREATED: 'bg-[var(--status-complete-bg)] text-[var(--status-complete-text)] ring-[var(--status-complete-ring)]',
+  UPDATED: 'bg-[var(--status-progress-bg)] text-[var(--status-progress-text)] ring-[var(--status-progress-ring)]',
+  STATUS_CHANGED: 'bg-[var(--status-pending-bg)] text-[var(--status-pending-text)] ring-[var(--status-pending-ring)]',
+  DELETED: 'bg-[color-mix(in_oklch,var(--destructive)_14%,transparent)] text-destructive ring-destructive/25',
+  ATTACHMENT_ADDED: 'bg-[var(--priority-low-bg)] text-[var(--priority-low-text)] ring-[var(--priority-low-ring)]',
+  ATTACHMENT_REMOVED: 'bg-[var(--priority-medium-bg)] text-[var(--priority-medium-text)] ring-[var(--priority-medium-ring)]',
+}
+
 interface TaskActivityListProps {
   taskId: string
 }
@@ -40,10 +50,10 @@ export function TaskActivityList({ taskId }: TaskActivityListProps) {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-3 py-2">
+      <div className="flex flex-col gap-4 py-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="flex items-start gap-3">
-            <Skeleton className="mt-0.5 h-5 w-5 rounded-full" />
+          <div key={i} className="flex items-start gap-3 rounded-lg border bg-muted/20 p-3">
+            <Skeleton className="mt-0.5 size-8 rounded-lg" />
             <div className="flex flex-1 flex-col gap-1.5">
               <Skeleton className="h-4 w-32" />
               <Skeleton className="h-3 w-20" />
@@ -56,24 +66,32 @@ export function TaskActivityList({ taskId }: TaskActivityListProps) {
 
   if (!activities || activities.length === 0) {
     return (
-      <p className="py-6 text-center text-sm text-muted-foreground">No activity yet.</p>
+      <div className="rounded-lg border bg-muted/20 px-4 py-8 text-center text-sm text-muted-foreground">
+        No activity yet.
+      </div>
     )
   }
 
   return (
-    <div className="flex flex-col gap-4 py-2">
-      {activities.map((activity) => {
+    <div className="relative flex flex-col gap-3 py-2">
+      <span className="absolute bottom-4 left-4 top-4 w-px bg-border" aria-hidden="true" />
+      {activities.map((activity, index) => {
         const Icon = ActionIcon[activity.action] ?? Pencil
         const label = actionLabels[activity.action] ?? activity.action
 
         return (
-          <div key={activity.id} className="flex items-start gap-3">
-            <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-              <Icon className="h-3 w-3" />
+          <div key={activity.id} className="relative flex items-start gap-3">
+            <div
+              className={cn(
+                'z-10 flex size-8 flex-shrink-0 items-center justify-center rounded-lg shadow-sm ring-1',
+                actionToneMap[activity.action],
+              )}
+            >
+              <Icon className="size-4" />
             </div>
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex flex-wrap items-center gap-1.5 text-sm">
-                <span className="font-medium">{label}</span>
+            <div className="flex min-w-0 flex-1 flex-col gap-1 rounded-lg border bg-background/68 px-3 py-2.5 shadow-sm transition-all duration-200 hover:bg-background/88 hover:shadow-md">
+              <div className="flex flex-wrap items-center gap-2 text-sm">
+                <span className="font-semibold">{label}</span>
                 {activity.action === 'STATUS_CHANGED' && activity.changes?.status && (
                   <>
                     <span className="text-muted-foreground">from</span>
@@ -84,14 +102,20 @@ export function TaskActivityList({ taskId }: TaskActivityListProps) {
                 )}
                 {activity.action === 'UPDATED' && activity.changes && (
                   <span className="text-muted-foreground">
-                    — {Object.keys(activity.changes).join(', ')}
+                    - {Object.keys(activity.changes).join(', ')}
                   </span>
                 )}
               </div>
-              <span className="text-xs text-muted-foreground">
-                {formatDistanceToNowStrict(new Date(activity.createdAt), { addSuffix: true })}
-              </span>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground">
+                <span>
+                  {formatDistanceToNowStrict(new Date(activity.createdAt), { addSuffix: true })}
+                </span>
+                <span className="font-mono">{activity.userId.slice(0, 8)}</span>
+              </div>
             </div>
+            {index === activities.length - 1 && (
+              <span className="absolute bottom-0 left-4 top-8 w-px bg-background" aria-hidden="true" />
+            )}
           </div>
         )
       })}

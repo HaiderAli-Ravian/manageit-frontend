@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format } from 'date-fns'
 import { CalendarIcon, Loader2 } from 'lucide-react'
@@ -19,9 +19,9 @@ import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Calendar } from '@/components/ui/calendar'
@@ -44,6 +44,18 @@ const createDefaults: TaskFormInput = {
   status: 'PENDING',
   priority: 'MEDIUM',
   dueDate: null,
+}
+
+const statusLabels: Record<TaskFormInput['status'], string> = {
+  PENDING: 'Pending',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+}
+
+const priorityLabels: Record<TaskFormInput['priority'], string> = {
+  LOW: 'Low',
+  MEDIUM: 'Medium',
+  HIGH: 'High',
 }
 
 function taskToDefaults(task: Task): TaskFormInput {
@@ -94,13 +106,18 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
     }
   }
 
+  const watchedStatus = useWatch({ control: form.control, name: 'status' })
+  const watchedPriority = useWatch({ control: form.control, name: 'priority' })
+  const watchedDueDate = useWatch({ control: form.control, name: 'dueDate' })
+
   const formContent = (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-5">
       <Field>
         <FieldLabel htmlFor="title">Title</FieldLabel>
         <Input
           id="title"
           placeholder="Task title"
+          className="h-11 rounded-lg bg-background/70 px-4 shadow-none"
           {...form.register('title')}
           aria-invalid={!!form.formState.errors.title}
         />
@@ -113,25 +130,28 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
           id="description"
           placeholder="Optional description"
           rows={3}
+          className="min-h-28 rounded-lg bg-background/70 px-4 py-3 shadow-none"
           {...form.register('description')}
         />
         <FieldError errors={form.formState.errors.description ? [form.formState.errors.description] : []} />
       </Field>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <Field>
           <FieldLabel>Status</FieldLabel>
           <Select
-            value={form.watch('status')}
+            value={watchedStatus}
             onValueChange={(v) => form.setValue('status', v as TaskFormInput['status'], { shouldValidate: true })}
           >
-            <SelectTrigger>
-              <SelectValue />
+            <SelectTrigger className="h-11 w-full rounded-lg bg-background/70 px-4 data-[size=default]:h-11">
+              <span>{statusLabels[watchedStatus]}</span>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="PENDING">Pending</SelectItem>
-              <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectGroup>
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
+                <SelectItem value="COMPLETED">Completed</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </Field>
@@ -139,16 +159,18 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
         <Field>
           <FieldLabel>Priority</FieldLabel>
           <Select
-            value={form.watch('priority')}
+            value={watchedPriority}
             onValueChange={(v) => form.setValue('priority', v as TaskFormInput['priority'], { shouldValidate: true })}
           >
-            <SelectTrigger>
-              <SelectValue />
+            <SelectTrigger className="h-11 w-full rounded-lg bg-background/70 px-4 data-[size=default]:h-11">
+              <span>{priorityLabels[watchedPriority]}</span>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="LOW">Low</SelectItem>
-              <SelectItem value="MEDIUM">Medium</SelectItem>
-              <SelectItem value="HIGH">High</SelectItem>
+              <SelectGroup>
+                <SelectItem value="LOW">Low</SelectItem>
+                <SelectItem value="MEDIUM">Medium</SelectItem>
+                <SelectItem value="HIGH">High</SelectItem>
+              </SelectGroup>
             </SelectContent>
           </Select>
         </Field>
@@ -163,29 +185,30 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
                 <Button
                   type="button"
                   variant="outline"
-                  className="flex-1 justify-start text-left font-normal"
+                  className="h-11 flex-1 justify-start rounded-lg bg-background/70 px-4 text-left font-normal"
                 />
               }
             >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {form.watch('dueDate')
-                ? format(new Date(form.watch('dueDate')!), 'MMM d, yyyy')
+              <CalendarIcon data-icon="inline-start" />
+              {watchedDueDate
+                ? format(new Date(watchedDueDate), 'MMM d, yyyy')
                 : 'Pick a date'}
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={form.watch('dueDate') ? new Date(form.watch('dueDate')!) : undefined}
+                selected={watchedDueDate ? new Date(watchedDueDate) : undefined}
                 onSelect={(date) =>
                   form.setValue('dueDate', date ? date.toISOString() : null, { shouldValidate: true })
                 }
               />
             </PopoverContent>
           </Popover>
-          {form.watch('dueDate') && (
+          {watchedDueDate && (
             <Button
               type="button"
               variant="ghost"
+              className="h-11 rounded-lg px-4"
               onClick={() => form.setValue('dueDate', null, { shouldValidate: true })}
             >
               Clear
@@ -194,12 +217,17 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
         </div>
       </Field>
 
-      <DialogFooter>
-        <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
+      <DialogFooter className="-mx-6 -mb-6 p-6">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={() => onOpenChange(false)}
+          className="h-11 rounded-lg px-5"
+        >
           Cancel
         </Button>
-        <Button type="submit" disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        <Button type="submit" disabled={isPending} className="h-11 rounded-lg px-5">
+          {isPending && <Loader2 data-icon="inline-start" className="animate-spin" />}
           {mode === 'create' ? 'Create task' : 'Save changes'}
         </Button>
       </DialogFooter>
@@ -208,14 +236,16 @@ export function TaskFormDialog({ open, onOpenChange, mode, task }: TaskFormDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="premium-surface max-h-[90vh] gap-5 overflow-y-auto rounded-lg bg-card/95 p-6 backdrop-blur-2xl sm:max-w-xl md:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{mode === 'create' ? 'New task' : 'Edit task'}</DialogTitle>
+          <DialogTitle className="text-2xl font-semibold tracking-tight">
+            {mode === 'create' ? 'New task' : 'Edit task'}
+          </DialogTitle>
         </DialogHeader>
 
         {mode === 'edit' && task ? (
           <Tabs defaultValue="details">
-            <TabsList className="mb-4">
+            <TabsList className="mb-5 h-11 w-full justify-start rounded-lg bg-muted/70">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="activity">Activity</TabsTrigger>
             </TabsList>

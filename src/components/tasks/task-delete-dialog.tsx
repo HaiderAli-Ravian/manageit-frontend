@@ -32,23 +32,24 @@ export function TaskDeleteDialog({ task, open, onOpenChange }: TaskDeleteDialogP
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
+      <AlertDialogContent className="premium-surface max-w-lg rounded-lg bg-card/95 p-6 backdrop-blur-2xl">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete task?</AlertDialogTitle>
+          <AlertDialogTitle className="text-xl font-semibold tracking-tight">Delete task?</AlertDialogTitle>
           <AlertDialogDescription>
             This will permanently delete{' '}
             <span className="font-semibold text-foreground">{task?.title}</span>. This action
             cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogFooter className="-mx-6 -mb-6 p-6">
+          <AlertDialogCancel className="h-11 rounded-lg px-5">Cancel</AlertDialogCancel>
           <Button
             variant="destructive"
             onClick={handleConfirm}
             disabled={deleteMutation.isPending}
+            className="h-11 rounded-lg px-5"
           >
-            {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {deleteMutation.isPending && <Loader2 data-icon="inline-start" className="animate-spin" />}
             Delete
           </Button>
         </AlertDialogFooter>
