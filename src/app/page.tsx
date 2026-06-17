@@ -13,7 +13,7 @@ export default function RootPage() {
   useEffect(() => {
     if (!isHydrated) return
     if (user) {
-      router.replace('/dashboard')
+      router.replace('/tasks')
     } else {
       router.replace('/login')
     }

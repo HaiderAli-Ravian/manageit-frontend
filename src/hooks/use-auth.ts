@@ -25,7 +25,7 @@ export function useLoginMutation() {
     onSuccess: user => {
       setUser(user)
       toast.success('Welcome back!')
-      router.replace('/dashboard')
+      router.replace('/tasks')
     },
     onError: (err: AxiosError<ApiErrorResponse>) => {
       toast.error(err.response?.data?.error?.message ?? 'Login failed')
@@ -41,7 +41,7 @@ export function useSignupMutation() {
     onSuccess: user => {
       setUser(user)
       toast.success('Account created!')
-      router.replace('/dashboard')
+      router.replace('/tasks')
     },
     onError: (err: AxiosError<ApiErrorResponse>) => {
       toast.error(err.response?.data?.error?.message ?? 'Signup failed')
