@@ -14,8 +14,10 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
+      if (!process.env.API_INTERNAL_URL)
+        throw new UploadThingError('Server misconfigured: API_INTERNAL_URL not set')
       const cookieHeader = req.headers.get('cookie') ?? ''
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      const res = await fetch(`${process.env.API_INTERNAL_URL}/auth/me`, {
         headers: { cookie: cookieHeader },
         credentials: 'include',
       })
