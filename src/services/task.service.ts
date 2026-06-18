@@ -19,6 +19,7 @@ export interface Task {
   priority: TaskPriority
   dueDate: string | null
   userId: string
+  user?: { id: string; name: string; email: string }
   createdAt: string
   updatedAt: string
 }

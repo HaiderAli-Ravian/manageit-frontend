@@ -102,7 +102,7 @@ export function TaskRow({ task, onEdit, onDelete, showOwner }: TaskRowProps) {
           {showOwner && (
             <span className="flex h-6 min-w-0 items-center gap-1.5">
               <UserRound className="size-3.5 shrink-0" />
-              <span className="truncate font-mono">{task.userId.slice(0, 8)}</span>
+              <span className="truncate">{task.user?.name ?? task.userId.slice(0, 8)}</span>
             </span>
           )}
         </div>
@@ -128,13 +128,11 @@ export function TaskRow({ task, onEdit, onDelete, showOwner }: TaskRowProps) {
       </div>
 
       <div className="hidden min-w-0 items-center gap-1.5 text-xs text-muted-foreground md:col-auto md:flex">
-        {showOwner ? (
+        {showOwner && (
           <>
             <UserRound className="size-3.5 shrink-0" />
-            <span className="truncate font-mono">{task.userId.slice(0, 8)}</span>
+            <span className="truncate">{task.user?.name ?? task.userId.slice(0, 8)}</span>
           </>
-        ) : (
-          <span className="hidden md:inline">-</span>
         )}
       </div>
 
