@@ -1,5 +1,6 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import { formatDistanceToNowStrict } from 'date-fns'
 import { AnimatePresence, motion } from 'motion/react'
 import {
@@ -9,12 +10,13 @@ import {
   FileType,
   ImageIcon,
   Loader2,
+  Paperclip,
   Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
-import { UploadButton } from '@/lib/uploadthing'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import {
   useAttachments,
   useAddAttachmentMutation,
@@ -107,6 +109,28 @@ export function AttachmentsList({ taskId }: AttachmentsListProps) {
   const { data: attachments, isLoading } = useAttachments(taskId)
   const addMutation = useAddAttachmentMutation(taskId)
   const removeMutation = useRemoveAttachmentMutation(taskId)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    setIsUploading(true)
+    try {
+      const result = await uploadToCloudinary(file)
+      addMutation.mutate({
+        fileUrl: result.url,
+        fileName: result.name,
+        fileType: result.type,
+        fileSize: result.size,
+      })
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -150,21 +174,29 @@ export function AttachmentsList({ taskId }: AttachmentsListProps) {
         <p className="text-sm text-muted-foreground">No files attached</p>
       )}
 
-      <div>
-        <UploadButton
-          endpoint="taskAttachment"
-          onClientUploadComplete={(files) => {
-            files.forEach((file) => {
-              addMutation.mutate({
-                fileUrl: file.url,
-                fileName: file.name,
-                fileType: file.type,
-                fileSize: file.size,
-              })
-            })
-          }}
-          onUploadError={(err) => { toast.error(err.message) }}
+      <div className="flex flex-col gap-1.5">
+        <input
+          ref={fileInputRef}
+          type="file"
+          className="sr-only"
+          accept="image/*,.pdf,.doc,.docx"
+          disabled={isUploading}
+          onChange={handleFileChange}
         />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={isUploading}
+          onClick={() => fileInputRef.current?.click()}
+          className="w-fit"
+        >
+          {isUploading
+            ? <Loader2 className="mr-2 size-4 animate-spin" />
+            : <Paperclip className="mr-2 size-4" />}
+          {isUploading ? 'Uploading…' : 'Attach file'}
+        </Button>
+        <p className="text-xs text-muted-foreground">Images, PDF, DOC, DOCX · max 4 MB</p>
       </div>
     </div>
   )
