@@ -75,22 +75,15 @@ function AttachmentRow({
         </p>
       </div>
       <div className="flex items-center gap-1">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="size-8"
-          asChild
+        <a
+          href={attachment.fileUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open file"
+          className="inline-flex size-8 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
         >
-          <a
-            href={attachment.fileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Open file"
-          >
-            <ExternalLink className="size-4" />
-          </a>
-        </Button>
+          <ExternalLink className="size-4" />
+        </a>
         <Button
           type="button"
           variant="ghost"
