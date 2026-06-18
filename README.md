@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Running with Docker
+
+1. `cp .env.example .env` and fill in real values
+2. `docker-compose up -d --build`
+3. Frontend available at http://localhost:3000
+
+`.env` serves double duty: docker-compose reads it automatically to substitute `${NEXT_PUBLIC_API_URL}` into the build args (so it gets baked into the JS bundle at build time), and the same file is injected into the running container for runtime vars like `UPLOADTHING_TOKEN`.
+
+> **Note:** signup/login require the backend to be running and reachable at the configured `NEXT_PUBLIC_API_URL` before they will work. See manageit-backend's README for instructions on running it (with or without Docker).
+
 ## Getting Started
 
 First, run the development server:
