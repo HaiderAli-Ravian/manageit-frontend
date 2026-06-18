@@ -56,9 +56,9 @@ export function TaskRow({ task, onEdit, onDelete, showOwner }: TaskRowProps) {
       <Checkbox
         checked={isCompleted}
         onCheckedChange={handleCheck}
-        disabled={toggle.isPending}
+        disabled={toggle.isPending || showOwner}
         aria-label={`Mark "${task.title}" as ${isCompleted ? 'pending' : 'completed'}`}
-        className="mt-1 md:mt-0"
+        className={cn('mt-1 md:mt-0', showOwner && 'invisible')}
       />
 
       <div
