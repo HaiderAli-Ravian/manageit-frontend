@@ -12,7 +12,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     if (isHydrated && user) {
-      router.replace('/dashboard')
+      router.replace('/tasks')
     }
   }, [isHydrated, user, router])
 
