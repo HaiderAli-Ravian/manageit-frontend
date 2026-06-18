@@ -14,10 +14,13 @@ export const ourFileRouter = {
     },
   })
     .middleware(async ({ req }) => {
-      if (!process.env.API_INTERNAL_URL)
-        throw new UploadThingError('Server misconfigured: API_INTERNAL_URL not set')
+      // API_INTERNAL_URL is required in Docker (where localhost != host machine).
+      // Falls back to NEXT_PUBLIC_API_URL on Vercel/bare-metal where they're the same.
+      const apiBase = process.env.API_INTERNAL_URL ?? process.env.NEXT_PUBLIC_API_URL
+      if (!apiBase)
+        throw new UploadThingError('Server misconfigured: set API_INTERNAL_URL or NEXT_PUBLIC_API_URL')
       const cookieHeader = req.headers.get('cookie') ?? ''
-      const res = await fetch(`${process.env.API_INTERNAL_URL}/auth/me`, {
+      const res = await fetch(`${apiBase}/auth/me`, {
         headers: { cookie: cookieHeader },
         credentials: 'include',
       })
