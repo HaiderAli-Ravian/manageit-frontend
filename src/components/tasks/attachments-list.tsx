@@ -80,10 +80,16 @@ function AttachmentRow({
           variant="ghost"
           size="icon"
           className="size-8"
-          onClick={() => window.open(attachment.fileUrl, '_blank', 'noopener,noreferrer')}
-          aria-label="Open file"
+          asChild
         >
-          <ExternalLink className="size-4" />
+          <a
+            href={attachment.fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open file"
+          >
+            <ExternalLink className="size-4" />
+          </a>
         </Button>
         <Button
           type="button"
@@ -174,7 +180,7 @@ export function AttachmentsList({ taskId }: AttachmentsListProps) {
         <p className="text-sm text-muted-foreground">No files attached</p>
       )}
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col items-center gap-1.5">
         <input
           ref={fileInputRef}
           type="file"
@@ -189,7 +195,7 @@ export function AttachmentsList({ taskId }: AttachmentsListProps) {
           size="sm"
           disabled={isUploading}
           onClick={() => fileInputRef.current?.click()}
-          className="w-fit"
+          className=""
         >
           {isUploading
             ? <Loader2 className="mr-2 size-4 animate-spin" />
