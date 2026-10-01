@@ -1,12 +1,14 @@
 # ManageIt Frontend
 
-A task management UI built with Next.js 16 (App Router), React 19, TypeScript, and Tailwind. Authentication, task CRUD with combinable filter/search/sort/pagination, optimistic UI for status toggles, activity log per task, file attachments, role-based admin view, and dark mode.
+ManageIt is a Next.js task-management frontend paired with a NestJS/PostgreSQL API. It demonstrates typed service and query-hook boundaries, URL-based filtering, optimistic task updates, session hydration, and coordinated token refresh.
+
+The implementation is an assessment with documented limitations. See the [backend repository](https://github.com/HaiderAli-Ravian/manageit-backend) for persistence, authentication, API contracts, and local setup.
 
 ## Live
 
 https://manageit-frontend-psi.vercel.app
 
-> The backend runs on Railway's free tier and may take up to 60 seconds to wake from idle on the first request. The frontend itself is on Vercel and always-on.
+> The frontend page loads, but the previously advertised hosted backend Swagger URL returned 404 during the October 2026 audit. End-to-end hosted authentication and task operations are not currently verified. Use the local backend setup for evaluation.
 
 ## Tech Stack
 
@@ -190,15 +192,15 @@ A few decisions made deliberately, with the reasoning.
 
 **Animations only where they help, not where they look cool.** motion is bounded to task list items and attachment list items. No hover scaling, no page transitions, no stagger animations on mount. The goal was a SaaS dashboard feel (Linear, Vercel) not a portfolio site feel.
 
-**No frontend tests.** The build (`npm run build`) is the quality gate — TypeScript catches the failure modes that matter most in a strongly-typed React + TanStack Query stack. Three meaningful tests on the backend service layer cover the highest-value business logic. Adding frontend Testing Library + Playwright tests would be meaningful work for limited additional signal in this scope.
+**Validation coverage.** Current validation includes a TypeScript production build and backend service tests. Frontend behavior and cross-application integration are not yet covered by automated tests. Planned coverage includes session hydration, concurrent token refresh, optimistic-update rollback, and role-based navigation. Build success does not establish runtime correctness.
 
 ## Known Limitations
 
-- The admin task view shows truncated user IDs (first 8 chars) instead of the owner's email or name. The backend's admin endpoint doesn't enrich tasks with the owner's user object — would require either populating the relation server-side or a separate users-by-id batch lookup on the frontend.
+- The backend admin response now includes the owner ID, name, and email. Verify that the frontend renders the available owner information consistently.
 - Deleting an attachment removes the metadata row but doesn't clean up the underlying file on Cloudinary. Orphaned files accumulate over time. A production app would call Cloudinary's destroy API in the same flow or run a scheduled cleanup job.
 - No real-time updates. TanStack Query's refetch-on-window-focus provides "semi-live" data when the user switches back to the tab, which is enough for this use case. A WebSocket layer was on the bonus list but skipped.
 - No frontend tests. See the trade-offs section.
-- Free tier services have spin-down behavior. First request after idle on the Railway backend may take up to 60s, which means the very first signup/login attempt after a long idle may feel slow.
+- The previously advertised hosted backend is not currently verified. Local setup is the reliable review path.
 
 ## Backend Repo
 
